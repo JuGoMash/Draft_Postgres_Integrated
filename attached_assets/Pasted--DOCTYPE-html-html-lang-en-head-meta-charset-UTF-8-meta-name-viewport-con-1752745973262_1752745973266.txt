@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IronLedgerMedMap - Find & Book Doctors</title>
+    <base target="_self">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@preline/preline@2.0.0/dist/preline.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            900: '#1e3a8a',
+                            800: '#1e40af',
+                            700: '#1d4ed8',
+                            600: '#2563eb',
+                            500: '#3b82f6',
+                            400: '#60a5fa',
+                            300: '#93c5fd',
+                            200: '#bfdbfe',
+                            100: '#dbeafe',
+                            50: '#eff6ff'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.2);
+        }
+        .rating-stars {
+            color: #fbbf24;
+        }
+        .specialty-tag {
+            transition: all 0.2s ease;
+        }
+        .specialty-tag:hover {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .map-container {
+            height: 400px;
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+        .availability-slot:hover {
+            background-color: #0ea5e9;
+            color: white;
+        }
+        .nav-link.active {
+            border-bottom: 2px solid #0ea5e9;
+            color: #0ea5e9;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-map-marked-alt text-primary-600 dark:text-primary-400 text-xl mr-2"></i>
+                        <span class="text-xl font-bold text-primary-600 dark:text-primary-400">IronLedgerMedMap</span>
+                    </div>
+                </div>
+                <div class="hidden md:ml-6 md:flex md:items-center md:space-x-4">
+                    <a href="#search" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition duration-300 active">Find Doctors</a>
+                    <a href="#how-it-works" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition duration-300">How It Works</a>
+                    <a href="#for-doctors" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition duration-300">For Doctors</a>
+                    <button id="theme-toggle" class="text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg text-sm p-2 transition duration-300">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                    <a href="#login" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 transition duration-300">Sign In</a>
+                </div>
+                <div class="-mr-2 flex items-center md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 focus:outline-none transition duration-300">
+                        <span class="sr-only">Open main menu</span>
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-800 shadow-lg">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#search" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition duration-300 active">Find Doctors</a>
+                <a href="#how-it-works" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition duration-300">How It Works</a>
+                <a href="#for-doctors" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition duration-300">For Doctors</a>
+                <div class="px-3 py-2">
+                    <button id="mobile-theme-toggle" class="text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg text-sm p-2 transition duration-300">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                </div>
+                <a href="#login" class="block px-3 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700 transition duration-300 text-center">Sign In</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-primary-50 to-secondary-50 dark:from-gray-800 dark:to-gray-800">
+        <div class="max-w-7xl mx-auto">
+            <div class="md:grid md:grid-cols-2 md:gap-12 items-center">
+                <div class="mb-8 md:mb-0">
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                        Find the Right Doctor 
+                        <span class="text-primary-600 dark:text-primary-400">Near You</span>
+                    </h1>
+                    <p class="text-xl text-gray-600 dark:text-gray-300 mb-8">
+                        Book appointments instantly with verified doctors. Compare prices, ratings, and specialties all in one place.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#search" class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition duration-300 text-center">
+                            Search Doctors
+                        </a>
+                        <a href="#how-it-works" class="px-6 py-3 border border-primary-600 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-gray-700 font-medium rounded-lg shadow-sm transition duration-300 text-center">
+                            How It Works
+                        </a>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4 border border-gray-200 dark:border-gray-700">
+                        <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                             alt="Doctor consultation" 
+                             class="rounded-lg w-full h-auto">
+                    </div>
+                    <div class="absolute -bottom-4 -right-4 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Doctor profile">
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">Dr. Sarah Johnson</p>
+                                <div class="flex items-center">
+                                    <div class="flex rating-stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">4.7 (128)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section id="search" class="py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-primary-50 dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-primary-100 dark:border-gray-700">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Find Your Doctor</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label for="specialty" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Specialty</label>
+                        <select id="specialty" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                            <option value="">All Specialties</option>
+                            <option value="cardiology">Cardiology</option>
+                            <option value="dermatology">Dermatology</option>
+                            <option value="neurology">Neurology</option>
+                            <option value="pediatrics">Pediatrics</option>
+                            <option value="orthopedics">Orthopedics</option>
+                            <option value="gynecology">Gynecology</option>
+                            <option value="general">General Physician</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+                        <input type="text" id="location" placeholder="City or ZIP code" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="insurance" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Insurance</label>
+                        <select id="insurance" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                            <option value="">All Insurance Plans</option>
+                            <option value="bluecross">BlueCross BlueShield</option>
+                            <option value="aetna">Aetna</option>
+                            <option value="united">UnitedHealthcare</option>
+                            <option value="medicare">Medicare</option>
+                            <option value="medicaid">Medicaid</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button id="search-button" class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition duration-300">
+                            Search Doctors
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Results -->
+            <div class="mt-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Available Doctors</h3>
+                    <div class="flex items-center">
+                        <span class="text-sm text-gray-600 dark:text-gray-400 mr-2">Sort by:</span>
+                        <select id="sort-by" class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 bg-white dark:bg-gray-700 focus:ring-primary-500 focus:border-primary-500">
+                            <option value="rating">Highest Rating</option>
+                            <option value="distance">Nearest</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="availability">Earliest Availability</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="doctors-container">
+                    <!-- Doctors will be loaded here by JavaScript -->
+                </div>
+                
+                <div class="mt-8 flex justify-center">
+                    <button id="load-more" class="px-6 py-2 border border-primary-600 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-gray-800 font-medium rounded-lg shadow-sm transition duration-300">
+                        Load More Doctors
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Doctor Details Modal -->
+    <div id="doctor-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-2xl leading-6 font-bold text-gray-900 dark:text-white" id="modal-doctor-name">
+                                        Dr. Sarah Johnson
+                                    </h3>
+                                    <p class="text-lg text-primary-600 dark:text-primary-400" id="modal-doctor-specialty">
+                                        Cardiologist
+                                    </p>
+                                </div>
+                                <button id="close-modal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div class="md:col-span-2">
+                                    <div class="flex items-start mb-6">
+                                        <div class="flex-shrink-0">
+                                            <img class="h-24 w-24 rounded-full" id="modal-doctor-image" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Doctor profile">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="flex items-center mb-2">
+                                                <div class="flex rating-stars" id="modal-doctor-rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                </div>
+                                                <span class="text-sm text-gray-500 dark:text-gray-400 ml-1" id="modal-doctor-review-count">(128 reviews)</span>
+                                            </div>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-2" id="modal-doctor-experience">
+                                                <i class="fas fa-briefcase-medical mr-1"></i> 12 years experience
+                                            </p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-2" id="modal-doctor-education">
+                                                <i class="fas fa-graduation-cap mr-1"></i> Harvard Medical School
+                                            </p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300" id="modal-doctor-languages">
+                                                <i class="fas fa-language mr-1"></i> English, Spanish
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <h4 class="font-bold text-gray-900 dark:text-white mb-2">About</h4>
+                                        <p class="text-gray-600 dark:text-gray-300" id="modal-doctor-bio">
+                                            Dr. Johnson is a board-certified cardiologist with extensive experience in preventive cardiology and heart disease management. She believes in a patient-centered approach and takes time to understand each patient's unique needs.
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <h4 class="font-bold text-gray-900 dark:text-white mb-2">Specializations</h4>
+                                        <div class="flex flex-wrap gap-2" id="modal-doctor-specializations">
+                                            <span class="specialty-tag px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs rounded-full">Preventive Cardiology</span>
+                                            <span class="specialty-tag px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs rounded-full">Heart Disease</span>
+                                            <span class="specialty-tag px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs rounded-full">Hypertension</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 dark:text-white mb-2">Location</h4>
+                                        <div class="flex items-start">
+                                            <i class="fas fa-map-marker-alt text-primary-600 dark:text-primary-400 mt-1 mr-2"></i>
+                                            <div>
+                                                <p class="text-gray-900 dark:text-white font-medium" id="modal-doctor-clinic">HeartCare Medical Center</p>
+                                                <p class="text-gray-600 dark:text-gray-300" id="modal-doctor-address">123 Medical Drive, Suite 200, Boston, MA 02115</p>
+                                                <p class="text-gray-600 dark:text-gray-300" id="modal-doctor-distance">0.8 miles away</p>
+                                            </div>
+                                        </div>
+                                        <div class="map-container mt-4 bg-gray-200 dark:bg-gray-700" id="doctor-map">
+                                            <!-- Map will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                        <h4 class="font-bold text-gray-900 dark:text-white mb-4">Book Appointment</h4>
+                                        
+                                        <div class="mb-4">
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Consultation Fee</p>
+                                            <p class="text-xl font-bold text-primary-600 dark:text-primary-400" id="modal-doctor-fee">$150</p>
+                                        </div>
+                                        
+                                        <div class="mb-4">
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Available Time Slots</p>
+                                            <div class="grid grid-cols-2 gap-2" id="time-slots">
+                                                <!-- Time slots will be loaded here -->
+                                            </div>
+                                        </div>
+                                        
+                                        <button id="book-appointment" class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition duration-300">
+                                            Confirm Booking
+                                        </button>
+                                        
+                                        <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                                            <p>By booking, you agree to our <a href="#" class="text-primary-600 dark:text-primary-400 hover:underline">Terms of Service</a> and <a href="#" class="text-primary-600 dark:text-primary-400 hover:underline">Privacy Policy</a>.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                        <h4 class="font-bold text-gray-900 dark:text-white mb-4">Patient Reviews</h4>
+                                        
+                                        <div class="space-y-4" id="doctor-reviews">
+                                            <!-- Reviews will be loaded here -->
+                                        </div>
+                                        
+                                        <button class="mt-4 w-full px-4 py-2 border border-primary-600 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-gray-600 font-medium rounded-lg shadow-sm transition duration-300">
+                                            View All Reviews
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">How IronLedgerMedMap Works</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    Simple steps to find and book the perfect doctor for your needs
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 mb-4">
+                        <i class="fas fa-search text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">1. Search Doctors</h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Filter by specialty, location, insurance, and availability to find doctors that match your needs.
+                    </p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 mb-4">
+                        <i class="fas fa-user-md text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">2. Compare Options</h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        View doctor profiles with ratings, reviews, pricing, and availability to make an informed choice.
+                    </p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 mb-4">
+                        <i class="fas fa-calendar-check text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">3. Book Instantly</h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Select your preferred time slot and book your appointment with just a few clicks.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- For Doctors Section -->
+    <section id="for-doctors" class="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="md:grid md:grid-cols-2 md:gap-12 items-center">
+                <div class="mb-8 md:mb-0">
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                        Join Our Network of 
+                        <span class="text-primary-600 dark:text-primary-400">Trusted Doctors</span>
+                    </h2>
+                    <p class="text-xl text-gray-600 dark:text-gray-300 mb-6">
+                        Grow your practice by connecting with patients looking for your expertise.
+                    </p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-primary-600 dark:text-primary-400"></i>
+                            </div>
+                            <p class="ml-3 text-gray-600 dark:text-gray-300">
+                                <span class="font-bold text-gray-900 dark:text-white">Increase visibility</span> - Reach thousands of potential patients in your area
+                            </p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-primary-600 dark:text-primary-400"></i>
+                            </div>
+                            <p class="ml-3 text-gray-600 dark:text-gray-300">
+                                <span class="font-bold text-gray-900 dark:text-white">Manage your schedule</span> - Control your availability and appointment types
+                            </p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas fa-check-circle text-primary-600 dark:text-primary-400"></i>
+                            </div>
+                            <p class="ml-3 text-gray-600 dark:text-gray-300">
+                                <span class="font-bold text-gray-900 dark:text-white">Get verified reviews</span> - Build trust with prospective patients
+                            </p>
+                        </li>
+                    </ul>
+                    <a href="#" class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition duration-300 inline-flex items-center">
+                        List Your Practice
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <img src="https://images.unsplash.com/photo-1629909613657-1f0d1e6b4a2b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                         alt="Doctor using tablet" 
+                         class="rounded-lg w-full h-auto">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">What Our Users Say</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    Trusted by thousands of patients and doctors nationwide
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Patient">
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Emily R.</p>
+                            <div class="flex rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        "Found a great dermatologist in my area with same-day availability. The booking process was so easy and the doctor was fantastic!"
+                    </p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Patient">
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Michael T.</p>
+                            <div class="flex rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        "As a new patient in the city, IronLedgerMedMap helped me find a primary care physician who accepts my insurance. Saved me hours of research!"
+                    </p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Doctor">
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Dr. Lisa Wong</p>
+                            <div class="flex rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        "Since joining IronLedgerMedMap, my practice has seen a 40% increase in new patients. The platform makes scheduling effortless for both me and my patients."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-primary-600">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-white mb-4">Ready to Find Your Perfect Doctor?</h2>
+            <p class="text-xl text-primary-100 mb-8 max-w-3xl mx-auto">
+                Join thousands of patients who found the right healthcare provider through IronLedgerMedMap.
+            </p>
+            <a href="#search" class="px-8 py-3 bg-white text-primary-600 hover:bg-gray-100 font-bold rounded-lg shadow-lg transition duration-300 inline-flex items-center">
+                Search Doctors Now
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 pt-12 pb-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">IronLedgerMedMap</h3>
+                    <p class="text-sm mb-4">
+                        Connecting patients with the right doctors through advanced technology and verified information.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">For Patients</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Search Doctors</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Book Appointments</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Patient Reviews</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Health Articles</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">For Doctors</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Join Our Network</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Doctor Dashboard</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Appointment Management</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Marketing Services</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Resources</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">About Us</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Careers</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Press</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Blog</a></li>
+                        <li><a href="#" class="nav-link text-sm hover:text-white transition duration-300">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm text-gray-500 mb-4 md:mb-0">
+                    © 2023 IronLedgerMedMap. All rights reserved.
+                </p>
+                <div class="flex space-x-6">
+                    <a href="#" class="nav-link text-sm text-gray-500 hover:text-white transition duration-300">Privacy Policy</a>
+                    <a href="#" class="nav-link text-sm text-gray-500 hover:text-white transition duration-300">Terms of Service</a>
+                    <a href="#" class="nav-link text-sm text-gray-500 hover:text-white transition duration-300">HIPAA Compliance</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample doctor data
+        const doctors = [
+            {
+                id: 1,
+                name: "Dr. Sarah Johnson",
+                specialty: "Cardiologist",
+                image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                rating: 4.7,
+                reviews: 128,
+                distance: 0.8,
+                price: 150,
+                clinic: "HeartCare Medical Center",
+                address: "123 Medical Drive, Suite 200, Boston, MA 02115",
+                education: "Harvard Medical School",
+                experience: "12 years",
+                languages: "English, Spanish",
+                bio: "Dr. Johnson is a board-certified cardiologist with extensive experience in preventive cardiology and heart disease management. She believes in a patient-centered approach and takes time to understand each patient's unique needs.",
+                specializations: ["Preventive Cardiology", "Heart Disease", "Hypertension"],
+                insurance: ["BlueCross BlueShield", "Aetna", "UnitedHealthcare"],
+                availability: ["2023-07-15T09:00:00", "2023-07-15T10:30:00", "2023-07-15T14:00:00", "2023-07-16T11:00:00", "2023-07-16T15:30:00"]
+            },
+            {
+                id: 2,
+                name: "Dr. Michael Chen",
+                specialty: "Dermatologist",
+                image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80",
+                rating: 4.9,
+                reviews: 245,
+                distance: 1.2,
+                price: 175,
+                clinic: "Skin Wellness Center",
+                address: "456 Dermatology Ave, Suite 100, Boston, MA 02116",
+                education: "Johns Hopkins School of Medicine",
+                experience: "8 years",
+                languages: "English, Mandarin",
+                bio: "Dr. Chen specializes in medical and cosmetic dermatology with a focus on skin cancer prevention and treatment. He is known for his gentle approach and thorough examinations.",
+                specializations: ["Skin Cancer", "Acne Treatment", "Cosmetic Dermatology"],
+                insurance: ["BlueCross BlueShield", "Medicare", "Aetna"],
+                availability: ["2023-07-14T10:00:00", "2023-07-14T13:30:00", "2023-07-15T08:30:00", "2023-07-15T16:00:00", "2023-07-17T09:00:00"]
+            },
+            {
+                id: 3,
+                name: "Dr. Lisa Rodriguez",
+                specialty: "Pediatrician",
+                image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+                rating: 4.8,
+                reviews: 192,
+                distance: 2.5,
+                price: 120,
+                clinic: "Boston Children's Health",
+                address: "789 Pediatrics Lane, Boston, MA 02118",
+                education: "Stanford University School of Medicine",
+                experience: "10 years",
+                languages: "English, Spanish",
+                bio: "Dr. Rodriguez is a compassionate pediatrician dedicated to providing comprehensive care for children from birth through adolescence. She emphasizes preventive care and family education.",
+                specializations: ["Newborn Care", "Vaccinations", "Childhood Development"],
+                insurance: ["BlueCross BlueShield", "Medicaid", "UnitedHealthcare"],
+                availability: ["2023-07-14T08:00:00", "2023-07-14T11:00:00", "2023-07-15T09:30:00", "2023-07-16T10:00:00", "2023-07-17T14:00:00"]
+            },
+            {
+                id: 4,
+                name: "Dr. James Wilson",
+                specialty: "Orthopedic Surgeon",
+                image: "https://images.unsplash.com/photo-1651008376811-b90baee60c1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+                rating: 4.6,
+                reviews: 87,
+                distance: 3.1,
+                price: 250,
+                clinic: "Boston Orthopedic Specialists",
+                address: "101 Joint Street, Suite 300, Boston, MA 02120",
+                education: "Mayo Clinic Alix School of Medicine",
+                experience: "15 years",
+                languages: "English",
+                bio: "Dr. Wilson is a fellowship-trained orthopedic surgeon specializing in sports medicine and joint replacement. He takes a conservative approach to treatment whenever possible.",
+                specializations: ["Knee Replacement", "Sports Injuries", "Arthroscopic Surgery"],
+                insurance: ["BlueCross BlueShield", "Aetna", "Medicare"],
+                availability: ["2023-07-14T07:30:00", "2023-07-15T12:00:00", "2023-07-16T08:00:00", "2023-07-17T10:30:00", "2023-07-17T15:00:00"]
+            },
+            {
+                id: 5,
+                name: "Dr. Priya Patel",
+                specialty: "Neurologist",
+                image
