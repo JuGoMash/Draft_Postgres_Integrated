@@ -20,7 +20,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2024-06-20",
 });
 
 // Connected WebSocket clients
@@ -163,6 +163,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Doctor search error:', error);
       res.status(500).json({ message: "Failed to search doctors" });
+    }
+  });
+
+  // Top rated doctors
+  app.get('/api/doctors/top-rated', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const doctors = await storage.getTopRatedDoctors(limit);
+      res.json(doctors);
+    } catch (error) {
+      console.error('Get top rated doctors error:', error);
+      res.status(500).json({ message: "Failed to get top rated doctors" });
+    }
+  });
+
+  // Nearby doctors
+  app.get('/api/doctors/nearby', async (req, res) => {
+    try {
+      const lat = parseFloat(req.query.lat as string);
+      const lng = parseFloat(req.query.lng as string);
+      const radius = parseFloat(req.query.radius as string) || 10;
+      
+      const doctors = await storage.getNearbyDoctors(lat, lng, radius);
+      res.json(doctors);
+    } catch (error) {
+      console.error('Get nearby doctors error:', error);
+      res.status(500).json({ message: "Failed to get nearby doctors" });
     }
   });
 
@@ -423,33 +450,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Mark notification read error:', error);
       res.status(500).json({ message: "Failed to mark notification as read" });
-    }
-  });
-
-  // Top rated doctors
-  app.get('/api/doctors/top-rated', async (req, res) => {
-    try {
-      const limit = parseInt(req.query.limit as string) || 10;
-      const doctors = await storage.getTopRatedDoctors(limit);
-      res.json(doctors);
-    } catch (error) {
-      console.error('Get top rated doctors error:', error);
-      res.status(500).json({ message: "Failed to get top rated doctors" });
-    }
-  });
-
-  // Nearby doctors
-  app.get('/api/doctors/nearby', async (req, res) => {
-    try {
-      const lat = parseFloat(req.query.lat as string);
-      const lng = parseFloat(req.query.lng as string);
-      const radius = parseFloat(req.query.radius as string) || 10;
-      
-      const doctors = await storage.getNearbyDoctors(lat, lng, radius);
-      res.json(doctors);
-    } catch (error) {
-      console.error('Get nearby doctors error:', error);
-      res.status(500).json({ message: "Failed to get nearby doctors" });
     }
   });
 
