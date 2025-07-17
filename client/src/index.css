@@ -1,0 +1,226 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+  
+  /* Medical platform specific colors */
+  --primary-50: hsl(207, 100%, 97%);
+  --primary-100: hsl(207, 96%, 94%);
+  --primary-200: hsl(207, 94%, 88%);
+  --primary-300: hsl(207, 89%, 78%);
+  --primary-400: hsl(207, 85%, 68%);
+  --primary-500: hsl(207, 90%, 54%);
+  --primary-600: hsl(207, 91%, 48%);
+  --primary-700: hsl(207, 85%, 41%);
+  --primary-800: hsl(207, 78%, 34%);
+  --primary-900: hsl(207, 73%, 28%);
+  
+  --secondary-50: hsl(214, 100%, 97%);
+  --secondary-100: hsl(214, 95%, 93%);
+  --secondary-200: hsl(213, 97%, 87%);
+  --secondary-300: hsl(212, 96%, 78%);
+  --secondary-400: hsl(213, 94%, 68%);
+  --secondary-500: hsl(217, 91%, 60%);
+  --secondary-600: hsl(221, 83%, 53%);
+  --secondary-700: hsl(224, 76%, 48%);
+  --secondary-800: hsl(226, 71%, 40%);
+  --secondary-900: hsl(224, 64%, 33%);
+  
+  --success-50: hsl(142, 76%, 96%);
+  --success-500: hsl(142, 71%, 45%);
+  --success-600: hsl(142, 76%, 36%);
+  --success-700: hsl(142, 72%, 29%);
+  
+  --amber-400: hsl(38, 92%, 50%);
+  --amber-500: hsl(32, 95%, 44%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Medical platform specific styles */
+.doctor-card {
+  transition: all 0.3s ease;
+}
+
+.doctor-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.2);
+}
+
+.rating-stars {
+  color: hsl(38, 92%, 50%);
+}
+
+.specialty-tag {
+  transition: all 0.2s ease;
+}
+
+.specialty-tag:hover {
+  background-color: hsl(217, 91%, 60%);
+  color: white;
+}
+
+.map-container {
+  height: 500px;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.availability-slot {
+  transition: all 0.2s ease;
+}
+
+.availability-slot:hover {
+  background-color: hsl(207, 90%, 54%);
+  color: white;
+}
+
+.nav-link.active {
+  border-bottom: 2px solid hsl(207, 90%, 54%);
+  color: hsl(207, 90%, 54%);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.pulse-dot {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.booking-modal {
+  backdrop-filter: blur(10px);
+}
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, hsl(207, 90%, 54%), hsl(217, 91%, 60%));
+  z-index: 1000;
+  transition: width 0.3s ease;
+}
+
+/* Theme transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Loading states */
+.loading-spinner {
+  @apply animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full;
+}
+
+/* Error states */
+.error-message {
+  @apply text-red-600 bg-red-50 border border-red-200 rounded-lg p-3 text-sm;
+}
+
+/* Success states */
+.success-message {
+  @apply text-green-600 bg-green-50 border border-green-200 rounded-lg p-3 text-sm;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .map-container {
+    height: 300px;
+  }
+  
+  .doctor-card {
+    padding: 1rem;
+  }
+  
+  .hero-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary-600));
+}
