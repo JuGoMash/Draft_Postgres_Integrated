@@ -144,13 +144,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/doctors', async (req, res) => {
     try {
       const filters = {
-        specialty: req.query.specialty as string,
+        specialty: req.query.specialty === 'all' ? undefined : req.query.specialty as string,
         location: req.query.location as string,
-        insurance: req.query.insurance as string,
+        insurance: req.query.insurance === 'all' ? undefined : req.query.insurance as string,
         availability: req.query.availability as string,
         gender: req.query.gender as string,
-        language: req.query.language as string,
-        rating: req.query.rating ? parseFloat(req.query.rating as string) : undefined,
+        language: req.query.language === 'all' ? undefined : req.query.language as string,
+        rating: req.query.rating === 'all' ? undefined : req.query.rating ? parseFloat(req.query.rating as string) : undefined,
         services: req.query.services ? (req.query.services as string).split(',') : undefined,
         priceRange: req.query.priceRange as string,
         lat: req.query.lat ? parseFloat(req.query.lat as string) : undefined,

@@ -117,7 +117,7 @@ export default function SearchFiltersComponent({
                 <SelectValue placeholder="All Specialties" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Specialties</SelectItem>
+                <SelectItem value="all">All Specialties</SelectItem>
                 {specialties.map((specialty) => (
                   <SelectItem key={specialty.value} value={specialty.value}>
                     {specialty.label}
@@ -152,7 +152,7 @@ export default function SearchFiltersComponent({
                 <SelectValue placeholder="All Insurance" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Insurance</SelectItem>
+                <SelectItem value="all">All Insurance</SelectItem>
                 {insurances.map((insurance) => (
                   <SelectItem key={insurance.value} value={insurance.value}>
                     {insurance.label}
@@ -218,7 +218,7 @@ export default function SearchFiltersComponent({
                     <SelectValue placeholder="Any Language" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Any Language</SelectItem>
+                    <SelectItem value="all">Any Language</SelectItem>
                     {languages.map((language) => (
                       <SelectItem key={language.value} value={language.value}>
                         {language.label}
@@ -237,7 +237,7 @@ export default function SearchFiltersComponent({
                     <SelectValue placeholder="Any Rating" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Any Rating</SelectItem>
+                    <SelectItem value="all">Any Rating</SelectItem>
                     <SelectItem value="4">4+ Stars</SelectItem>
                     <SelectItem value="4.5">4.5+ Stars</SelectItem>
                     <SelectItem value="4.8">4.8+ Stars</SelectItem>
