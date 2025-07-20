@@ -1,3 +1,4 @@
+import patientsRoute from "./routes/patients";
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
@@ -455,3 +456,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   return httpServer;
 }
+
+app.use("/api/patients", patientsRoute);
