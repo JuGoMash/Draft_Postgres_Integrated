@@ -1,25 +1,20 @@
 
 import { db } from "./server/db";
-import { bookings } from "./server/schema";
+import { bookings } from "./server/schema"; // Optional if you use types
 
 async function seed() {
-  await db.insert(bookings).values([
-    {
-      fullName: "John Doe",
-      phoneNumber: "123456789",
-      age: 30,
-      gender: "Male",
-      service: "Dental",
-      doctor: "Dr. Smith",
-      appointmentDate: "2024-08-01",
-      appointmentTime: "10:00",
-    },
-  ]);
-  console.log("✅ Seed data inserted successfully.");
-  process.exit(0);
+  try {
+    await db.query(\`
+      INSERT INTO bookings (name, email, date)
+      VALUES ($1, $2, $3)
+    \`, ['John Doe', 'john@example.com', '2025-08-01']);
+
+    console.log("✅ Seed data inserted successfully.");
+    process.exit(0);
+  } catch (error) {
+    console.error("❌ Failed to insert seed data:", error);
+    process.exit(1);
+  }
 }
 
-seed().catch((err) => {
-  console.error("❌ Failed to insert seed data:", err);
-  process.exit(1);
-});
+seed();
