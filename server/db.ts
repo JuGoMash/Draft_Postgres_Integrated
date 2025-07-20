@@ -1,14 +1,8 @@
-import pg from 'pg';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import * as schema from './schema';
+import dotenv from "dotenv";
+dotenv.config();
 
-const { Pool } = pg;
+const { Pool } = await import("pg");
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL!,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+export const db = new Pool({
+  connectionString: process.env.DATABASE_URL,
 });
-
-export const db = drizzle(pool, { schema });
