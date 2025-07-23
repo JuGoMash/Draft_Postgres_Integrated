@@ -1,16 +1,15 @@
-
 import express from 'express';
 import dotenv from 'dotenv';
+import { registerRoutes } from './routes';
 
 dotenv.config();
 
 const app = express();
-const PORT = parseInt(process.env.PORT || "3000", 10);
+const port = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  res.send('API is running...');
-});
+app.use(express.json());
+registerRoutes(app);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(Number(port), () => {
+  console.log(`Server listening on port ${port}`);
 });
