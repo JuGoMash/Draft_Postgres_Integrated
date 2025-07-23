@@ -1,37 +1,21 @@
-# Base image for backend
-FROM node:18 AS backend
-
-WORKDIR /app/server
-COPY server/package.json ./
-RUN npm install
-COPY server/. .
-
-# Base image for frontend
-FROM node:18 AS frontend
-
-WORKDIR /app/client
-COPY client/package.json client/package-lock.json ./
-RUN npm install
-COPY client/. .
-RUN npm run build
-
-# Final image to serve frontend and backend
+# Use an official Node.js image as the base
 FROM node:18
 
+# Set the working directory
 WORKDIR /app
 
-# Copy server files
-COPY --from=backend /app/server ./server
+# Copy package files and install dependencies
+COPY server/package.json server/package-lock.json ./
+RUN npm install
 
-# Copy built frontend
-COPY --from=frontend /app/client/dist ./client/dist
+# Copy the entire server directory
+COPY server .
 
-# Install backend dependencies again in case needed at runtime
-WORKDIR /app/server
-RUN npm install --omit=dev
+# Compile TypeScript to JavaScript
+RUN npx tsc
 
-# Expose backend port
+# Expose the port your app runs on (adjust if needed)
 EXPOSE 3000
 
-# Run backend server
-CMD ["node", "index.js"]
+# Start the server
+CMD ["node", "dist/index.js"]
