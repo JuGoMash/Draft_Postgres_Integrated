@@ -1,40 +1,37 @@
-# BACKEND
+# Base image for backend
 FROM node:18 AS backend
+
 WORKDIR /app/server
-
-# Install backend dependencies
-COPY server/package.json server/package-lock.json ./
+COPY server/package.json ./
 RUN npm install
+COPY server/. .
 
-# Copy backend source
-COPY server .
-
-# FRONTEND
+# Base image for frontend
 FROM node:18 AS frontend
-WORKDIR /app/client
 
-# Install frontend dependencies
+WORKDIR /app/client
 COPY client/package.json client/package-lock.json ./
 RUN npm install
-
-# Ensure Tailwind CSS, PostCSS, Autoprefixer are installed for build
-RUN npm install -D tailwindcss postcss autoprefixer
-
-# Copy frontend source
-COPY client .
-
-# Build frontend
+COPY client/. .
 RUN npm run build
 
-# FINAL IMAGE
+# Final image to serve frontend and backend
 FROM node:18
+
 WORKDIR /app
 
-# Copy backend and frontend build output
+# Copy server files
 COPY --from=backend /app/server ./server
+
+# Copy built frontend
 COPY --from=frontend /app/client/dist ./client/dist
 
-# Set environment and start server
-ENV NODE_ENV=production
+# Install backend dependencies again in case needed at runtime
 WORKDIR /app/server
+RUN npm install --omit=dev
+
+# Expose backend port
+EXPOSE 3000
+
+# Run backend server
 CMD ["node", "index.js"]
