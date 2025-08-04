@@ -1,8 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "rootDir": "./server",
+    "target": "es2017",
+    "module": "commonjs", 
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["./shared/*"]
+    },
+    "rootDir": ".",
     "outDir": "./dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -11,7 +15,8 @@
     "resolveJsonModule": true
   },
   "include": [
-    "server"
+    "server",
+    "shared"
   ],
   "exclude": [
     "node_modules"
